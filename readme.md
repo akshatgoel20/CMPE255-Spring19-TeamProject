@@ -7,7 +7,7 @@ Team Member:
 * Shashank Singh
 * Sheena Gupta
 
-![Facial Expression] ./image/paste_1474070199.png
+
 
 ### References:
 * Paper: Facial Expression Recognition Using Convonultional Neural Network: State of the Art, Pramerdorfer & al. 2016
