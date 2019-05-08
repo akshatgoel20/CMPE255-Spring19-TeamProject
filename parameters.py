@@ -1,4 +1,5 @@
-class Dataset:
+# initiliasing the collection class with all the parameters
+class Collection:
     name = 'Fer2013'
     train_folder = 'fer2013_features/Training'
     validation_folder = 'fer2013_features/PublicTest'
@@ -8,21 +9,24 @@ class Dataset:
     trunc_testset_to = -1
 
 
-class Hyperparams:
+# initiliasing the Hyperparameters class with all the parameters
+class Hyperparameters:
     random_state = 0
-    epochs = 10000
-    epochs_during_hyperopt = 500
-    kernel = 'rbf'  # 'rbf', 'linear', 'poly' or 'sigmoid'
-    decision_function = 'ovr'  # 'ovo' for OneVsOne and 'ovr' for OneVsRest'
-    features = "landmarks_and_hog"  # "landmarks" or "hog" or "landmarks_and_hog"
-    gamma = 'auto'  # use a float number or 'auto'
+    epochs = 15000
+    epochs_during_hyperopt = 600
+    kernel = 'rbf'
+    decision_function = 'ovr'
+    features = "landmarks_and_hog"
+    gamma = 'auto'
 
-
-class Training:
+# initiliasing the train class with all the parameters
+class Train:
     save_model = True
     save_model_path = "saved_model.bin"
 
-
-DATASET = Dataset()
-TRAINING = Training()
-HYPERPARAMS = Hyperparams()
+#for the DATASET
+DATASET = Collection()
+#for the TRAINING
+TRAINING = Train()
+#for the HYPERPARAMS
+HYPERPARAMS = Hyperparameters()

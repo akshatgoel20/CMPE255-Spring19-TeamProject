@@ -5,62 +5,54 @@ import time
 import numpy as np
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
-from parameters import HYPERPARAMS
 from train import train
 
-# define the search space
-fspace = {
+searchSpace = {
     'decision_function': hp.choice('decision_function', ['ovr', 'ovo']),
     'gamma': hp.uniform('gamma', 0.001, 0.0001),
 }
 
 # parse arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("-m", "--max_evals", required=True,
-                    help="Maximum number of evaluations during hyperparameters search")
+# parse arguments
 args = parser.parse_args()
+# max evaluations
 max_evals = int(args.max_evals)
+# current arguments
 current_eval = 1
+# histroiy of training data
 train_history = []
 
-
-def function_to_minimize(hyperparams, gamma='auto', decision_function='ovr'):
+# function to get the min of the hyperparams
+def function_to_minimize(hyperparams):
     decision_function = hyperparams['decision_function']
     gamma = hyperparams['gamma']
-    global current_eval
+    global current_eval, accuracy, training_time
     global max_evals
-    print("#################################")
-    print("       Evaluation {} of {}".format(current_eval, max_evals))
-    print("#################################")
     start_time = time.time()
     try:
-        accuracy = train(epochs=HYPERPARAMS.epochs_during_hyperopt, decision_function=decision_function, gamma=gamma)
+        accuracy = train()
         training_time = int(round(time.time() - start_time))
         current_eval += 1
         train_history.append(
             {'accuracy': accuracy, 'decision_function': decision_function, 'gamma': gamma, 'time': training_time})
     except Exception as e:
-        print("#################################")
-        print("Exception during training: {}".format(str(e)))
-        print("Saving train history in train_history.npy")
+        print("Exception during training: ".format(str(e)))
         np.save("train_history.npy", train_history)
         exit()
     return {'loss': -accuracy, 'time': training_time, 'status': STATUS_OK}
 
-
-# lunch the hyperparameters search
+#intialising the trials in trials variable
 trials = Trials()
-best_trial = fmin(fn=function_to_minimize, space=fspace, algo=tpe.suggest, max_evals=max_evals, trials=trials)
+# to get the best trial value
+best_trial = fmin(fn=function_to_minimize, space=searchSpace, algo=tpe.suggest, max_evals=max_evals, trials=trials)
 
-# get some additional information and print( the best parameters
+
+#iterating over trials with all the parameters
 for trial in trials.trials:
     if trial['misc']['vals']['decision_function'][0] == best_trial['decision_function'] and \
             trial['misc']['vals']['gamma'][0] == best_trial['gamma']:
         best_trial['accuracy'] = -trial['result']['loss'] * 100
         best_trial['time'] = trial['result']['time']
-print("#################################")
-print("      Best parameters found")
-print("#################################")
+#printing the best trial
 pprint.pprint(best_trial)
-print("decision_function { 0: ovr, 1: ovo }")
-print("#################################")
